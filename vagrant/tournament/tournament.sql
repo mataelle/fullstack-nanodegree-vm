@@ -6,24 +6,16 @@
 -- You can write comments in this file by starting them with two dashes, like
 -- these lines here.
 
+DROP TABLE if exists player cascade;
+DROP TABLE if exists match;
+
 CREATE TABLE player (
-    id integer PRIMARY KEY,
+    id serial PRIMARY KEY,
     username varchar(40) NOT NULL
 );
 
-CREATE TABLE tournament (
-    id integer PRIMARY KEY
-);
-
-CREATE TABLE round (
-    id integer PRIMARY KEY,
-    number integer NOT NULL,
-    tournament integer references tournament(id)
-);
-
 CREATE TABLE match (
-    id integer PRIMARY KEY,
-    round integer references round(id),
+    id serial PRIMARY KEY,
     winner integer references player(id),
     loser integer references player(id)
 );
