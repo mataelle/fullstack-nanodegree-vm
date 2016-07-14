@@ -1,5 +1,39 @@
-<form>
-    <input type="text" placeholder="name" value="{{item.name}}">
-    <textarea placeholder="description">{{item.description}}</textarea>
-    <input type="submit">
-</form>
+{% extends 'base.html' %}
+{% block content %}
+<div class="row">
+  <div class="col-md-12">
+    <h3>Edit Item</h3>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-6">
+  <form class="form-horizontal" method="post">
+    <div class="form-group">
+      <label for="item_name" class="col-sm-2 control-label">Name</label>
+      <div class="col-sm-10">
+        <input type="text" class="form-control" id="item_name" name="item_name" placeholder="Item name" value="{{item.name}}">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="description" class="col-sm-2 control-label">Description</label>
+      <div class="col-sm-10">
+        <textarea class="form-control" id="description" name="description" placeholder="Description">{{item.description}}</textarea>
+      </div>
+    </div>
+    {% if err_msg %}
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10 err_msg">
+        Both name and description needed.
+      </div>
+    </div>
+    {% endif %}
+    <div class="form-group">
+      <div class="col-sm-offset-2 col-sm-10">
+        <button type="submit" class="btn btn-default">Save</button>
+        <a href="/" class="btn btn-default">Cancel</a>
+      </div>
+    </div>
+  </form>
+  </div>
+</div>
+{% endblock %}
