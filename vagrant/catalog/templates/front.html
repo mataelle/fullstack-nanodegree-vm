@@ -1,0 +1,11 @@
+{% for category in categories %}
+    <a href="/category/{{category.id}}">{{category.name}}</a>
+{% endfor %}
+
+{% if latest_items %}
+    {% for item in latest_items %}
+        <a href="/category/{{category.id}}/item/{{item.id}}">{{item.name}}</a>
+    {% endfor %}
+{% else %}
+    <h2>There is no latest items. Do you want to add some?</h2>
+{% endif %}

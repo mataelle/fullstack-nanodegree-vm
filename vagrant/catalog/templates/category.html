@@ -1,0 +1,9 @@
+<a href="/category/{{category.id}}">{{category.name}}</a>
+
+{% if items %}
+    {% for item in items %}
+        <a href="/category/{{category.id}}/item/{{item.id}}">{{item.name}}</a>
+    {% endfor %}
+{% else %}
+    <h2>There is no items. Do you want to add some?</h2>
+{% endif %}
