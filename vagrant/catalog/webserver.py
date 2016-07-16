@@ -32,7 +32,7 @@ def DeleteItemHandler(category_id, item_id):
 @app.route('/category')
 @app.route('/')
 def MainHandler():
-    return render_template('category.html', category=None, latest_items=None)
+    return render_template('front.html', category=None, latest_items=None)
 
 if __name__ == "__main__":
     app.debug = True
