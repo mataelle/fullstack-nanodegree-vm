@@ -1,17 +1,22 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row">
-  <div class="col-md-12">
-    <h3>Category Page</h3>
-  </div>
-    <a href="/category/{{category.id}}">{{category.name}}</a>
+    <div class="col-md-12">
+        <h3>Category Page</h3>
+    </div>
+    <div class="col-md-6">
+        <a href="/category/{{category.id}}">{{category.name}}</a>
+    </div>
 
-    {% if items %}
-        {% for item in items %}
-            <a href="/category/{{category.id}}/item/{{item.id}}">{{item.name}}</a>
-        {% endfor %}
-    {% else %}
-        <h2>There is no items. Do you want to add some?</h2>
-    {% endif %}
+    <div class="col-md-6">
+        {% if items %}
+            {% for item in items %}
+                <a href="/category/{{category.id}}/item/{{item.id}}">{{item.name}}</a>
+            {% endfor %}
+        {% else %}
+            <h2>There is no items. Do you want to add some?</h2>
+        {% endif %}
+    </div>
+
 </div>
 {% endblock %}
