@@ -1,10 +1,18 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-8 col-md-offset-2">
     <h3>{{item.name}}</h3>
     <div class="description">{{item.description}}</div>
   </div>
 </div>
+<br>
+<div class="row">
+  <div class="col-md-8 col-md-offset-2">
+  <a class="btn btn-default" href="/category/{{item.category_id}}/item/{{item.id}}/edit">Edit</a>
+  <a class="btn btn-default" href="/category/{{item.category_id}}/item/{{item.id}}/delete">Delete</a>
+  </div>
+</div>
+
 {% endblock %}
 
