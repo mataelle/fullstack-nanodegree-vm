@@ -31,7 +31,8 @@ class Category(Base):
         ''' Return object data in easily serializable format '''
         return {
             'id': self.id,
-            'name': self.name
+            'name': self.name,
+            'items': [i.serialize for i in self.items]
         }
 
 
