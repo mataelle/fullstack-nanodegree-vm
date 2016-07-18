@@ -17,11 +17,10 @@ textarea {
     margin:7px 10px 7px 0;
 }
 
-@media (min-width: 0px) {
-    .navbar-header {
-        float:left;
-    }
-    .navbar-right {
-        float:right;
-    }
+.navbar-header {
+    float:left;
+}
+.navbar-right {
+    margin-right: 0 !important;
+    float:right !important;
 }

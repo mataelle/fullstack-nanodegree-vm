@@ -46,8 +46,8 @@ class Item(Base):
     category_id = Column(Integer, ForeignKey('category.id'))
     category = relationship(Category)
     created = Column(DateTime(timezone=True), default=func.now())
-    # user_id = Column(Integer, ForeignKey('user.id'))
-    # user = relationship(User)
+    user_id = Column(Integer, ForeignKey('user.id'))
+    user = relationship(User)
 
     @property
     def serialize(self):

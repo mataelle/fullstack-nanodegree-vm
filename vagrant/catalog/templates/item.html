@@ -6,13 +6,17 @@
     <div class="description">{{item.description}}</div>
   </div>
 </div>
+<div class="row">
+    <div class="col-md-8 col-md-offset-2 text-right text-info">Added by {{item.user.name}}</div>
+</div>
 <br>
+{% if user %}
 <div class="row">
   <div class="col-md-8 col-md-offset-2">
   <a class="btn btn-default" href="/category/{{item.category_id}}/item/{{item.id}}/edit">Edit</a>
   <a class="btn btn-default" href="/category/{{item.category_id}}/item/{{item.id}}/delete">Delete</a>
   </div>
 </div>
-
+{% endif %}
 {% endblock %}
 

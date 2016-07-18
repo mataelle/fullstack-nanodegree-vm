@@ -17,11 +17,14 @@
           <a class="navbar-brand" href="/">Catalog App</a>
         </div>
 
-        <div class="nav navbar-right">
-            {% if user %}
-            <li class="active"><a href="#">{{user.name}}</a></li>
-            <li><a href="/gdisconnect">Logout</a></li>
-            {% else %}
+        <div class="nav navbar-right" id="right-bar">
+        {% if user %}
+        <ul class="nav navbar-nav navbar-right">
+        <li class="active"><a href="#">{{user.name}}</a></li>
+        <li><a href="/gdisconnect">Logout</a></li>
+        </ul>
+        {% else %}
+        <ul class="nav navbar-right">
             <li id="signInButton">
                 <span class="g-signin"
                 data-scope="openid email"
@@ -34,6 +37,7 @@
                 </span>
             </li>
             {% endif %}
+        </ul>
         </div><!-- /.navbar-right -->
         </div><!-- /.container-fluid -->
     </nav>
