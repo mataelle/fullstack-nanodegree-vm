@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/static/css/theme.css">
     <script type="text/javascript" src="/static/js/jquery-2.2.0.js"></script>
     <script type="text/javascript" src="/static/js/bootstrap.js"></script>
+    <script src="//apis.google.com/js/platform.js?onload=start"> </script>
     <title>Catalog App</title>
 </head>
 <body>
@@ -16,17 +17,24 @@
           <a class="navbar-brand" href="/">Catalog App</a>
         </div>
 
-        <!-- Collect the nav links, forms, and other content for toggling -->
-        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
-          <ul class="nav navbar-nav navbar-right">
+        <div class="nav navbar-right">
             {% if user %}
-            <li class="active"><a href="#">{{user.username}}</a></li>
-            <li><a href="#">Logout</a></li>
+            <li class="active"><a href="#">{{user.name}}</a></li>
+            <li><a href="/gdisconnect">Logout</a></li>
             {% else %}
-            <li><a href="#">Login</a></li>
+            <li id="signInButton">
+                <span class="g-signin"
+                data-scope="openid email"
+                data-clientid="608516819784-vb0ej9k2dcb8efoopnvtcgu456e1oo6l.apps.googleusercontent.com"
+                data-redirecturi="postmessage"
+                data-accesstype="offline"
+                data-cookiepolicy="single_host_origin"
+                data-callback="signInCallback"
+                data-approvalprompt="force">
+                </span>
+            </li>
             {% endif %}
-          </ul>
-        </div><!-- /.navbar-collapse -->
+        </div><!-- /.navbar-right -->
         </div><!-- /.container-fluid -->
     </nav>
 
@@ -34,5 +42,32 @@
     {% block content %}
     {% endblock %}
     </div>
+<script>
+function signInCallback(authResult) {
+    if (authResult['code']) {
+        // Hide the sign-in button now that the user is authorized
+        $('#signinButton').attr('style', 'display: none');
+        // Send the one-time-use code to the server, if the server responds, write a 'login successful' message to the web page and then redirect back to the main restaurants page
+        $.ajax({
+            type: 'POST',
+            url: '/gconnect?state={{STATE}}',
+            processData: false,
+            data: authResult['code'],
+            contentType: 'application/octet-stream; charset=utf-8',
+            success: function(result) {
+            // Handle or verify the server response if necessary.
+                if (result) {
+                    $('#result').html('Login Successful!</br>'+ result + '</br>Redirecting...')
+                    setTimeout(function() {
+                        window.location.href = "/";
+                    }, 4000);
+                } else if (authResult['error']) {
+                    console.log('There was an error: ' + authResult['error']);
+                } else {
+                    $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+                }
+            }
+    }); } }
 
+</script>
 </body>

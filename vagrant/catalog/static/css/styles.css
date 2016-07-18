@@ -1,10 +1,27 @@
+body {
+    min-width: 600px;
+}
+
 .container {
     margin-top: 60px;
 }
 
 textarea {
-  resize:none;
-  word-wrap:break-word;
-  width:100%;
-  min-height:200px;
+    resize:none;
+    word-wrap:break-word;
+    width:100%;
+    min-height:200px;
+}
+
+#signInButton {
+    margin:7px 10px 7px 0;
+}
+
+@media (min-width: 0px) {
+    .navbar-header {
+        float:left;
+    }
+    .navbar-right {
+        float:right;
+    }
 }
