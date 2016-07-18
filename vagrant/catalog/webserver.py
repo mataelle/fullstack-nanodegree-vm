@@ -181,11 +181,17 @@ def ItemHandler(category_id, item_id):
 @app.route('/category/<int:category_id>/item/new', methods = ['GET', 'POST'])
 def NewItemHandler(category_id):
     if request.method == 'GET':
+        user = getUser()
+        if not user:
+          return render_template('error_forbidden.html')
         category = session.query(Category).filter_by(id = category_id).one()
         return render_template('item_new.html',
                                category = category,
                                user=getUser())
     else:
+        user = getUser()
+        if not user:
+          return render_template('error_forbidden.html')
         name = request.form.get('item_name', None)
         description = request.form.get('description', None)
         category = session.query(Category).filter_by(id = category_id).one()
@@ -196,7 +202,7 @@ def NewItemHandler(category_id):
                                   description = description,
                                   err_msg = True,
                                   user=getUser())
-        item = Item(name = name, description = description, category=category)
+        item = Item(name = name, description = description, category=category, user=getUser())
         session.add(item)
         session.commit()
         return redirect(url_for('ItemHandler', category_id = category_id, item_id = item.id))
@@ -206,6 +212,9 @@ def EditItemHandler(category_id, item_id):
     if request.method == 'GET':
         category = session.query(Category).filter_by(id = category_id).one()
         item = session.query(Item).filter_by(id = item_id).one()
+        user = getUser()
+        if not user or item.user_id != user.id:
+          return render_template('error_forbidden.html')
         return render_template('item_edit.html',
                                item_id = item_id,
                                category = category,
@@ -224,6 +233,9 @@ def EditItemHandler(category_id, item_id):
                                   user=getUser())
         category = session.query(Category).filter_by(id = category_id).one()
         item = session.query(Item).filter_by(id = item_id).one()
+        user = getUser()
+        if not user or item.user_id != user.id:
+          return render_template('error_forbidden.html')
         item.name = name
         item.description = description
         session.add(item)
@@ -237,6 +249,10 @@ def EditItemHandler(category_id, item_id):
 def DeleteItemHandler(category_id, item_id):
     if request.method == 'GET':
         category = session.query(Category).filter_by(id = category_id).one()
+        item = session.query(Item).filter_by(id = item_id).one()
+        user = getUser()
+        if not user or item.user_id != user.id:
+          return render_template('error_forbidden.html')
         return render_template('item_delete.html',
                                 category=category,
                                 item_id = item_id,
@@ -244,6 +260,9 @@ def DeleteItemHandler(category_id, item_id):
     else:
         category = session.query(Category).filter_by(id = category_id).one()
         item = session.query(Item).filter_by(id = item_id).one()
+        user = getUser()
+        if not user or item.user_id != user.id:
+          return render_template('error_forbidden.html')
         session.delete(item)
         session.commit()
         return redirect(url_for('CategoryHandler', category_id = category_id))
