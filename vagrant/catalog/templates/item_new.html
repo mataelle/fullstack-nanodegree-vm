@@ -1,12 +1,12 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-md-8 col-md-offset-2 text-right">
     <h3>New Item</h3>
   </div>
 </div>
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-8 col-md-offset-2">
   <form class="form-horizontal" method="post">
     <div class="form-group">
       <label for="item_name" class="col-sm-2 control-label">Name</label>
@@ -22,7 +22,7 @@
     </div>
     {% if err_msg %}
     <div class="form-group">
-      <div class="col-sm-offset-2 col-sm-10 err_msg">
+      <div class="col-sm-offset-2 col-sm-10 err_msg text-danger">
         Both name and description needed.
       </div>
     </div>

@@ -14,7 +14,7 @@
           <div class="panel-body">
             {% if category.items %}
                 {% for item in category.items %}
-                    <a href="/category/{{category_id}}/item/{{item.id}}">{{item.name}}</a><br>
+                    <a href="/category/{{category.id}}/item/{{item.id}}">{{item.name}}</a><br>
                 {% endfor %}
             {% else %}
                 <div>There is no items.</div>
