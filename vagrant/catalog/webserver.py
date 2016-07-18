@@ -1,9 +1,11 @@
-from flask import Flask, render_template, redirect, request, url_for, jsonify, make_response, flash
+from flask import (Flask, render_template, redirect, request,
+                   url_for, jsonify, make_response, flash)
 from flask import session as login_session
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from models import Base, Category, Item, User
-import json, httplib2
+import json
+import httplib2
 from oauth2client.client import flow_from_clientsecrets, FlowExchangeError
 import requests
 
@@ -66,8 +68,8 @@ def gconnect():
     stored_credentials = login_session.get('credentials')
     stored_gplus_id = login_session.get('gplus_id')
     if stored_credentials is not None and gplus_id == stored_gplus_id:
-        response = make_response(json.dumps('Current user is already connected.'),
-                                 200)
+        user_connected = 'Current user is already connected.'
+        response = make_response(json.dumps(user_connected), 200)
         response.headers['Content-Type'] = 'application/json'
         return response
 
@@ -100,19 +102,21 @@ def gconnect():
 
 def createUser(login_session):
     '''create and save user to db'''
-    user = User(name = login_session['username'],
-                   email=login_session['email'])
+    user = User(name=login_session['username'],
+                email=login_session['email'])
     session.add(user)
     session.commit()
     user = session.query(User).filter_by(email=login_session['email']).one()
     return user.id
 
+
 def getUser():
     '''get user from db by user_id'''
     if 'username' not in login_session:
-      return None
+        return None
     user = session.query(User).filter_by(id=login_session['user_id']).one()
     return user
+
 
 def getUserID(email):
     '''return user id'''
@@ -123,6 +127,7 @@ def getUserID(email):
         return None
 
 # DISCONNECT - Revoke a current user's token and reset their login_session
+
 
 @app.route('/gdisconnect')
 def gdisconnect():
@@ -151,131 +156,144 @@ def gdisconnect():
     del login_session['provider']
     return redirect(url_for('MainHandler'))
 
-#### json endpoints
+# json endpoints
+
 
 @app.route('/category/<int:category_id>/JSON')
 def categoryJSON(category_id):
-    category = session.query(Category).filter_by(id = category_id).one()
+    category = session.query(Category).filter_by(id=category_id).one()
     return jsonify(items=[i.serialize for i in category.items])
+
 
 @app.route('/catalog/JSON')
 def catalogJSON():
     categories = session.query(Category).all()
     return jsonify(catalog=[c.serialize for c in categories])
 
-#### handlers
+# handlers
+
 
 @app.route('/category/<int:category_id>')
 def CategoryHandler(category_id):
     '''category view'''
-    category = session.query(Category).filter_by(id = category_id).one()
+    category = session.query(Category).filter_by(id=category_id).one()
     return render_template('category.html', category=category, user=getUser())
+
 
 @app.route('/category/<int:category_id>/item/<int:item_id>')
 def ItemHandler(category_id, item_id):
     '''item view'''
-    item = session.query(Item).filter_by(id = item_id).one()
+    item = session.query(Item).filter_by(id=item_id).one()
     return render_template('item.html', item=item, user=getUser())
 
-@app.route('/category/<int:category_id>/item/new', methods = ['GET', 'POST'])
+
+@app.route('/category/<int:category_id>/item/new', methods=['GET', 'POST'])
 def NewItemHandler(category_id):
     '''add new item if allowed'''
     if request.method == 'GET':
         # check if user is authenticated
         user = getUser()
         if not user:
-          return render_template('error_forbidden.html')
+            return render_template('error_forbidden.html')
         # return page with form
-        category = session.query(Category).filter_by(id = category_id).one()
+        category = session.query(Category).filter_by(id=category_id).one()
         return render_template('item_new.html',
-                               category = category,
+                               category=category,
                                user=getUser())
     else:
         # check if user is authenticated
         user = getUser()
         if not user:
-          return render_template('error_forbidden.html')
+            return render_template('error_forbidden.html')
         name = request.form.get('item_name', None)
         description = request.form.get('description', None)
-        category = session.query(Category).filter_by(id = category_id).one()
+        category = session.query(Category).filter_by(id=category_id).one()
         if not name or not description:
-           return render_template('item_new.html',
-                                  category = category,
-                                  name = name,
-                                  description = description,
-                                  err_msg = True,
-                                  user=getUser())
+            return render_template('item_new.html',
+                                   category=category,
+                                   name=name,
+                                   description=description,
+                                   err_msg=True,
+                                   user=getUser())
         # if everything is ok, create new item
-        item = Item(name = name, description = description, category=category, user=getUser())
+        item = Item(name=name, description=description,
+                    category=category, user=getUser())
         session.add(item)
         session.commit()
-        return redirect(url_for('ItemHandler', category_id = category_id, item_id = item.id))
+        return redirect(url_for('ItemHandler',
+                                category_id=category_id,
+                                item_id=item.id))
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/edit', methods = ['GET', 'POST'])
+
+@app.route('/category/<int:category_id>/item/<int:item_id>/edit',
+           methods=['GET', 'POST'])
 def EditItemHandler(category_id, item_id):
     '''edit new item if it is allowed to current user'''
     if request.method == 'GET':
-        category = session.query(Category).filter_by(id = category_id).one()
-        item = session.query(Item).filter_by(id = item_id).one()
-        #check if current user is the author of item to edit
+        category = session.query(Category).filter_by(id=category_id).one()
+        item = session.query(Item).filter_by(id=item_id).one()
+        # check if current user is the author of item to edit
         user = getUser()
         if not user or item.user_id != user.id:
-          return render_template('error_forbidden.html')
+            return render_template('error_forbidden.html')
         return render_template('item_edit.html',
-                               item_id = item_id,
-                               category = category,
-                               name = item.name,
-                               description = item.description,
+                               item_id=item_id,
+                               category=category,
+                               name=item.name,
+                               description=item.description,
                                user=getUser())
     else:
         name = request.form.get('item_name', None)
         description = request.form.get('description', None)
         if not name or not description:
-           return render_template('item_edit.html',
-                                  item_id = item_id,
-                                  name = name,
-                                  description = description,
-                                  err_msg = True,
-                                  user=getUser())
-        category = session.query(Category).filter_by(id = category_id).one()
-        item = session.query(Item).filter_by(id = item_id).one()
+            return render_template('item_edit.html',
+                                   item_id=item_id,
+                                   name=name,
+                                   description=description,
+                                   err_msg=True,
+                                   user=getUser())
+        category = session.query(Category).filter_by(id=category_id).one()
+        item = session.query(Item).filter_by(id=item_id).one()
         user = getUser()
-        #check if current user is the author of item to edit
+        # check if current user is the author of item to edit
         if not user or item.user_id != user.id:
-          return render_template('error_forbidden.html')
+            return render_template('error_forbidden.html')
         item.name = name
         item.description = description
         session.add(item)
         session.commit()
         return render_template('item.html',
-                                category=category,
-                                item=item,
-                                user=getUser())
+                               category=category,
+                               item=item,
+                               user=getUser())
 
-@app.route('/category/<int:category_id>/item/<int:item_id>/delete', methods = ['GET', 'POST'])
+
+@app.route('/category/<int:category_id>/item/<int:item_id>/delete',
+           methods=['GET', 'POST'])
 def DeleteItemHandler(category_id, item_id):
     '''delete item if current user is its author'''
     if request.method == 'GET':
-        category = session.query(Category).filter_by(id = category_id).one()
-        item = session.query(Item).filter_by(id = item_id).one()
+        category = session.query(Category).filter_by(id=category_id).one()
+        item = session.query(Item).filter_by(id=item_id).one()
         user = getUser()
         # check if current user is the author
         if not user or item.user_id != user.id:
-          return render_template('error_forbidden.html')
+            return render_template('error_forbidden.html')
         return render_template('item_delete.html',
-                                category=category,
-                                item_id = item_id,
-                                user=getUser())
+                               category=category,
+                               item_id=item_id,
+                               user=getUser())
     else:
-        category = session.query(Category).filter_by(id = category_id).one()
-        item = session.query(Item).filter_by(id = item_id).one()
+        category = session.query(Category).filter_by(id=category_id).one()
+        item = session.query(Item).filter_by(id=item_id).one()
         user = getUser()
         # check if current user is the author
         if not user or item.user_id != user.id:
-          return render_template('error_forbidden.html')
+            return render_template('error_forbidden.html')
         session.delete(item)
         session.commit()
-        return redirect(url_for('CategoryHandler', category_id = category_id))
+        return redirect(url_for('CategoryHandler', category_id=category_id))
+
 
 @app.route('/catalog')
 @app.route('/')
@@ -283,10 +301,10 @@ def MainHandler():
     '''view front page with list of all categories and items'''
     categories = session.query(Category).all()
     return render_template('front.html',
-                            categories=categories,
-                            user=getUser())
+                           categories=categories,
+                           user=getUser())
 
 if __name__ == "__main__":
     app.secret_key = 'big big secret'
     app.debug = True
-    app.run(host = '0.0.0.0', port = 5000)
+    app.run(host='0.0.0.0', port=5000)
